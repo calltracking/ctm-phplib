@@ -1,0 +1,8 @@
+{"cookie_duration":30,
+ "replacement_rules":[["5554443333","linkedin.com|linkedin.dart","","5552223333","","",""],
+                      ["5554443333","(google\\.([^\\.\\/]{2,3})|google\\.com?\\.([^\\.\\/]{2}))\\/(url|search)","","5552223334","","",""]],
+ "exclusion_rules":["/accounts","/calls"],
+ "custom_formats":{"4109806647":[{"p":"4109750002","t":"number"},{"p":"4109759000","t":"number"}],"4109759000":[]},
+ "display_format":null,
+ "account_id":25,
+ "access_key":"a25ddaa8aed92e2514b32c11b5ce1c6a0373"}

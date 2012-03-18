@@ -8,11 +8,11 @@ To use server side tracking script for Call Tracking Metrics, you will need to i
   ctm_numbers.php
   ctm_config.php
 
-ctm_config.php must be callable via an HTTP Request. 
+ctm_config.php must be callable via an HTTP Request.
 We recommend the use of a valid SSL cert to protect all communication between our servers and your server.
 
 e.g.
-  
+
   http://example.com/ctm_config.php
 
 

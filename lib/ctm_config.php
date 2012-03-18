@@ -10,8 +10,12 @@
 
   class CTMConfig {
 
-    public function CTMConfig($post_body) {
-      $this->ctm_signature = $_SERVER['HTTP_CONTENT_SIGNATURE'];
+    public function CTMConfig($post_body, $env) {
+      if (array_key_exists('HTTP_CONTENT_SIGNATURE',$env)) {
+        $this->ctm_signature = $env['HTTP_CONTENT_SIGNATURE'];
+      } else {
+        $this->ctm_signature = null;
+      }
       $this->post_body = $post_body;
       $this->decoded = json_decode($this->post_body);
 
@@ -23,6 +27,7 @@
     }
 
     public function validate_request() {
+      if ($this->ctm_signature == null) { return false; }
 
       $computed_signature = base64_encode(hash_hmac("sha1", $this->post_body, CTM_SECRET_KEY, true));
 
@@ -44,6 +49,7 @@
     $config = new CTMConfig(file_get_contents('php://input'));
     if ($config->validate_request() ) {
       $config->update();
+      header("Status: 200 OK");
     }
   }
 
