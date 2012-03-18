@@ -4,7 +4,7 @@
   class CTMNumber {
     //
     // $ctm_numbers = new CTMNumber($_SERVER, $_COOKIES, "/path/to/your/config/ or null");
-    // $ctm_numbers->tracking_number_for_request();
+    // $ctm_numbers->tracking_number_for_receiving_number('5553334444');
     //
     public function CTMNumber($env, $cookies, $config_path) {
       $this->env = $env;
@@ -47,6 +47,7 @@
       if ($location == null) { $location = $oloc; }
 
       if ($cookie2 == null && $cookie == null) {
+        // use JS for setting cookies, will also be necessary to have the JS code for tracking user events...
         $this->set_cookie($this->cookie_ref_name, $referrer, $this->config->cookie_duration == 0 ? null : $this->config->cookie_duration);
         $this->set_cookie($this->cookie_path_name, $location, $this->config->cookie_duration == 0 ? null : $this->config->cookie_duration);
       }
@@ -56,14 +57,33 @@
     }
 
     public function tracking_number_for_receiving_number($receiving_number) {
+      $normalized_number = preg_replace("/[^0-9]*/", "", $receiving_number);
       foreach ($this->config->replacement_rules as $patterns) {
         $target_number = array_shift($patterns);
-        $custom_display = array_key_exists($target_number, $this->config->custom_formats) ? $this->config->custom_formats[$target_number] : null;
-        $new_number_ext = $this->find_replacement_number(array($patterns));
-        if ($new_number_ext) { return $new_number_ext; }
+        if ($target_number == $normalized_number) {
+          $custom_display = array_key_exists($target_number, $this->config->custom_formats) ? $this->config->custom_formats[$target_number] : null;
+          $new_number_ext = $this->find_replacement_number(array($patterns));
+          if ($new_number_ext) { return $new_number_ext; }
+        }
       }
       return $receiving_number;
     }
+
+    public function number_with_format($number, $formatted_number) {
+      $num     = preg_replace("/[^0-9]*/", "", $formatted_number);
+      $area    = join('', array($num[0], $num[1], $num[2]));
+      $prefix  = join('', array($num[3], $num[4], $num[5]));
+      $lnumber = join('', array($num[6], $num[7], $num[8], $num[9]));
+
+      $new_area    = join('', array($number[0], $number[1], $number[2]));
+      $new_prefix  = join('', array($number[3], $number[4], $number[5]));
+      $new_lnumber = join('', array($number[6], $number[7], $number[8], $number[9]));
+
+      $pc = "([&;nbsp\\s\\:\\.\\(\\)\\-]*)";
+      return preg_replace('/' . $pc . $area . $pc . $prefix . $pc . $lnumber . '/i', 
+                          "\${1}$new_area\${2}$new_prefix\${3}$new_lnumber", $formatted_number);
+    }
+
     private function find_replacement_number($patterns) {
       foreach ($patterns as $pattern) {
         $num = $pattern[2];
@@ -91,6 +111,7 @@
     }
 
     private function load_config($config_path) {
+      if (!$config_path) { $config_path = dirname(__FILE__) . '/ctm_config.json'; }
       return json_decode(file_get_contents($config_path));
     }
 
@@ -130,6 +151,13 @@
       setcookie($name, $cookie_value, $expires, '/', $this->hostname);
     }
 
+  }
+
+  function ctm_number_for_receiving($receiving_number) {
+    $number = new CTMNumber($_SERVER, $_COOKIE, null);
+    $res = $number->tracking_number_for_receiving_number($receiving_number);
+    if ($res && is_array($res)) { return $number->number_with_format($res[0], $receiving_number); }
+    return $res;
   }
 
 ?>

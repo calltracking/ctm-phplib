@@ -3,19 +3,39 @@ Call Tracking Metrics PHP Library
 
 Requires: PHP 5.x
 
-To use server side tracking script for Call Tracking Metrics, you will need to install the two tracking scripts.
+To use server side tracking script for Call Tracking Metrics, you will need to install the two php files.
 
-  ctm_numbers.php
-  ctm_config.php
+    ctm_numbers.php
+    ctm_config.php
 
 ctm_config.php must be callable via an HTTP Request.
 We recommend the use of a valid SSL cert to protect all communication between our servers and your server.
 
 e.g.
 
-  http://example.com/ctm_config.php
+    https://example.com/ctm_config.php
 
 
-You must configure in Call Tracking Metrics the ctm_config.php endpoint or URL that exposes the ctm_config.php file.
+Open the ctm_config.php file and update the 2 security tokens
 
-This can be done in your API settings page under account settings.
+    //define("CTM_ACCESS_KEY", "");
+    //define("CTM_SECRET_KEY", "");
+
+You may need to enable API access in your account by going to "settings" -> "manage settings" page and clicking "Enable API Access"
+
+
+To have your call tracking metrics account send configuration updates to your server set up an HTTP notification.
+
+Under the "settings" menu click "notifications"
+
+  Choose "After a tracking number change"
+
+  Choose "http"
+
+  Add the location of your ctm_config.php file e.g.
+    https://example.com/ctm_config.php
+
+Next to trigger a request to your server and have the configuration file written for the first time, go to the edit screen
+for one of your tracking numbers and click "Save Tracking Number".
+
+This will trigger the new notification to send a request to your server.

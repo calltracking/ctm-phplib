@@ -2,8 +2,8 @@
   /* Call Tracking Metrics 2012, All Rights Reserved */
 
   // TODO: add your keys here.  you can get these in your account settings by clicking enable api access.
-  //define("CTM_ACCESS_KEY", "");
-  //define("CTM_SECRET_KEY", "");
+  // define("CTM_ACCESS_KEY", "");
+  // define("CTM_SECRET_KEY", "");
 
   // optionally override the location of the tracking number configuration storage.   by default this will be in the same folder as the ctm_config.php file
   //define("CTM_TRACKING_NUMBERS_CONFIG_FILE", $_ENV['HOME'] . '.ctm_config.json');
@@ -46,7 +46,7 @@
   }
 
   if (!defined("CTM_TEST_MODE") || !CTM_TEST_MODE) {
-    $config = new CTMConfig(file_get_contents('php://input'));
+    $config = new CTMConfig(file_get_contents('php://input'),$_SERVER);
     if ($config->validate_request() ) {
       $config->update();
       header("Status: 200 OK");
